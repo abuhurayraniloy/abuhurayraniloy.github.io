@@ -1,0 +1,18 @@
+{
+  "name": "Abu Hurayra Niloy",
+  "siteTitle": "Abu Hurayra Niloy",
+  "description": "A personal website for writing, projects, and journals.",
+  "url": "https://abuhurayraniloy.github.io",
+  "locale": "en",
+  "home": {
+    "title": "Hi, I'm Abu Hurayra Niloy.",
+    "intro": "I write about what I am learning, build small things, and keep notes along the way."
+  },
+  "contact": {
+    "title": "Contact me",
+    "intro": "If you would like to talk, send me an email or find me here:",
+    "email": "abuhurayraniloy@gmail.com",
+    "github": "https://github.com/abuhurayraniloy",
+    "linkedin": "https://linkedin.com/in/niloy13/"
+  }
+}

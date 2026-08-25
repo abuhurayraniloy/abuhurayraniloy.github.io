@@ -1,0 +1,175 @@
+media:
+  - name: images
+    label: Images
+    input: public/uploads
+    output: /uploads
+    rename: safe
+    categories: [image]
+  - name: files
+    label: Documents and downloads
+    input: public/uploads/files
+    output: /uploads/files
+    rename: safe
+    categories: [document, compressed, audio, video]
+
+settings:
+  content:
+    merge: true
+  commit:
+    templates:
+      create: "content: add {name}"
+      update: "content: update {name}"
+      delete: "content: remove {name}"
+
+content:
+  - name: site
+    label: Site settings
+    type: file
+    path: content/settings.json
+    format: json
+    operations:
+      delete: false
+    fields:
+      - name: name
+        label: Your name
+        type: string
+        required: true
+      - name: siteTitle
+        label: Site title
+        type: string
+        required: true
+      - name: description
+        label: Site description
+        type: text
+        required: true
+      - name: url
+        label: Website URL
+        type: string
+        required: true
+      - name: locale
+        label: Language code
+        type: string
+        required: true
+      - name: home
+        label: Home page
+        type: object
+        required: true
+        fields:
+          - name: title
+            label: Home title
+            type: string
+            required: true
+          - name: intro
+            label: Home introduction
+            type: text
+            required: true
+      - name: contact
+        label: Contact page
+        type: object
+        required: true
+        fields:
+          - name: title
+            label: Contact title
+            type: string
+            required: true
+          - name: intro
+            label: Contact introduction
+            type: text
+            required: true
+          - name: email
+            label: Email address
+            type: string
+            required: true
+          - name: github
+            label: GitHub URL
+            type: string
+            required: true
+          - name: linkedin
+            label: LinkedIn URL
+            type: string
+            required: true
+
+  - name: posts
+    label: Blogs
+    type: collection
+    path: content/posts
+    format: yaml-frontmatter
+    filename:
+      template: "{primary}.md"
+      field: create
+    subfolders: false
+    view:
+      fields: [title, date, draft]
+      primary: title
+      sort: [date, title]
+      search: [title, description, tags]
+      default:
+        sort: date
+        order: desc
+    fields: &entry_fields
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: description
+        label: Short description
+        type: text
+        required: true
+      - name: date
+        label: Date
+        type: date
+        required: true
+      - name: tags
+        label: Tags
+        type: string
+        list: true
+      - name: draft
+        label: Keep as draft
+        type: boolean
+      - name: body
+        label: Content
+        type: rich-text
+        required: true
+        options:
+          media: images
+          path: public/uploads
+          rename: safe
+          switcher: true
+
+  - name: projects
+    label: Projects
+    type: collection
+    path: content/projects
+    format: yaml-frontmatter
+    filename:
+      template: "{primary}.md"
+      field: create
+    subfolders: false
+    view:
+      fields: [title, date, draft]
+      primary: title
+      sort: [date, title]
+      search: [title, description, tags]
+      default:
+        sort: date
+        order: desc
+    fields: *entry_fields
+
+  - name: journals
+    label: Journals
+    type: collection
+    path: content/journals
+    format: yaml-frontmatter
+    filename:
+      template: "{primary}.md"
+      field: create
+    subfolders: false
+    view:
+      fields: [title, date, draft]
+      primary: title
+      sort: [date, title]
+      search: [title, description, tags]
+      default:
+        sort: date
+        order: desc
+    fields: *entry_fields
