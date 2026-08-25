@@ -52,6 +52,7 @@ test("ships discovery assets", async () => {
 test("uses full-document navbar navigation for static hosting", async () => {
   const renderer = await readFile(new URL("../app/site.tsx", import.meta.url), "utf8");
   assert.match(renderer, /nav\.map\(\(\[label, href\]\) => <a /);
+  assert.match(renderer, /<a className="site-title" href="\/">/);
 });
 
 test("keeps Markdown raw HTML disabled", async () => {

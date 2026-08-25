@@ -1,5 +1,5 @@
+/* eslint-disable @next/next/no-html-link-for-pages -- Static export needs full-document navigation. */
 import type { Metadata } from "next";
-import Link from "next/link";
 import { isValidElement, type ReactNode } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -66,7 +66,7 @@ export function SiteFrame({ children, currentPath }: { children: ReactNode; curr
     <div className="site">
       <header className="site-header">
         <div className="site-header__inner">
-          <Link className="site-title" href="/">{settings.siteTitle}</Link>
+          <a className="site-title" href="/">{settings.siteTitle}</a>
           <nav aria-label="Primary navigation" className="site-nav">
             {nav.map(([label, href]) => <a aria-current={activePath(href, currentPath) ? "page" : undefined} href={href} key={href}>{label}</a>)}
           </nav>
