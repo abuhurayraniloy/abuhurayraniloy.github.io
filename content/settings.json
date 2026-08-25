@@ -5,8 +5,8 @@
   "url": "https://niloy.github.io",
   "locale": "en",
   "home": {
-    "title": "Hi, I'm Abu Hurayra Niloy.",
-    "intro": "I write about what I am learning, build small things, and keep notes along the way."
+    "title": "Hi, I'm Abu Hurayra Niloy.                                        ",
+    "intro": "I write about what I am learning, build small things, and keep notes along the way.\n\n\nI am currently learning Rust and system programming."
   },
   "contact": {
     "title": "Contact me",
