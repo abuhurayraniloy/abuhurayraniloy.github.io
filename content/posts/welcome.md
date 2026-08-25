@@ -13,8 +13,6 @@ tags:
 ---
 # Welcome
 
-![](/uploads/cloverbyrivermakesddtex56.png)
-
 This blog section is a growing home for my writing, projects, and notes.
 
 ## Built to change
