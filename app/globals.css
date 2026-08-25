@@ -42,30 +42,30 @@ a:hover { color: var(--brown-dark); }
 
 .site-main { width: min(100% - 2rem, 1200px); min-height: calc(100vh - 4.5rem); padding: 5rem 0 7rem; margin: 0 auto; }
 .home-intro { max-width: 62rem; padding: 4rem 0 5rem; }
-h1 { max-width: 24ch; margin: 0; color: var(--brown); font-size: clamp(2.5rem, 7vw, 5.5rem); font-weight: 700; line-height: 1.08; }
+h1 { max-width: 24ch; margin: 0; color: var(--brown); font-size: clamp(2.25rem, 5.5vw, 4.5rem); font-weight: 700; line-height: 1.08; }
 .home-intro p { max-width: 48rem; margin: 1.5rem 0 0; color: var(--muted); font-size: clamp(1.15rem, 2vw, 1.45rem); }
 .page-heading { max-width: 62rem; padding: 1rem 0 3rem; }
-.page-heading h1 { font-size: clamp(2.4rem, 6vw, 4.5rem); }
+.page-heading h1 { font-size: clamp(2.1rem, 5vw, 3.8rem); }
 .page-heading p { max-width: 48rem; margin: 1rem 0 0; color: var(--muted); }
 .eyebrow { margin: 0 0 .65rem; color: var(--brown); font-size: .82rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .empty-state { color: var(--muted); }
 
 .entry-list { max-width: 70rem; padding: 0; margin: 0; border-top: 1px solid var(--line); list-style: none; }
 .entry-list li { padding: 1.15rem 0; border-bottom: 1px solid var(--line); }
-.entry-list__link { display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem; color: var(--brown); font-size: 1.2rem; font-weight: 700; text-decoration: none; }
+.entry-list__link { display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem; color: var(--brown); font-size: 1.1rem; font-weight: 700; text-decoration: none; }
 .entry-list__link:hover { text-decoration: underline; }
 .entry-list time { flex: none; color: var(--muted); font-size: .82rem; font-weight: 400; }
 .entry-list li p { max-width: 54rem; margin: .3rem 0 0; color: var(--muted); font-size: .96rem; }
 
 .article { max-width: 70rem; }
-.article > h1 { font-size: clamp(2.4rem, 6vw, 4.5rem); }
+.article > h1 { font-size: clamp(2.1rem, 5vw, 3.8rem); }
 .article-description { max-width: 54rem; margin: 1rem 0 0; color: var(--muted); font-size: 1.2rem; }
 .article-date { display: block; margin-top: 1rem; color: var(--muted); font-size: .9rem; }
 .article-tags { color: var(--muted); font-size: .85rem; }
 .prose { max-width: 54rem; padding-top: 2.5rem; color: var(--ink); }
 .prose h2, .prose h3, .prose h4 { color: var(--brown); line-height: 1.25; }
-.prose h2 { margin-top: 2.8rem; font-size: 2rem; }
-.prose h3 { margin-top: 2rem; font-size: 1.45rem; }
+.prose h2 { margin-top: 2.8rem; font-size: 1.75rem; }
+.prose h3 { margin-top: 2rem; font-size: 1.3rem; }
 .prose p, .prose ul, .prose ol, .prose blockquote, .prose pre, .prose table { margin: 1rem 0; }
 .prose ul, .prose ol { padding-left: 1.4rem; }
 .prose li { margin: .35rem 0; }
