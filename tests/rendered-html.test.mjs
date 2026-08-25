@@ -49,6 +49,11 @@ test("ships discovery assets", async () => {
   assert.match(sitemapSource, /abuhurayraniloy\.github\.io\/journals\/a-small-start/);
 });
 
+test("uses full-document navbar navigation for static hosting", async () => {
+  const renderer = await readFile(new URL("../app/site.tsx", import.meta.url), "utf8");
+  assert.match(renderer, /nav\.map\(\(\[label, href\]\) => <a /);
+});
+
 test("keeps Markdown raw HTML disabled", async () => {
   const renderer = await readFile(new URL("../app/site.tsx", import.meta.url), "utf8");
   assert.match(renderer, /<ReactMarkdown[^>]*skipHtml/);

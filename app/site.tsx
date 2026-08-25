@@ -68,7 +68,7 @@ export function SiteFrame({ children, currentPath }: { children: ReactNode; curr
         <div className="site-header__inner">
           <Link className="site-title" href="/">{settings.siteTitle}</Link>
           <nav aria-label="Primary navigation" className="site-nav">
-            {nav.map(([label, href]) => <Link aria-current={activePath(href, currentPath) ? "page" : undefined} href={href} key={href}>{label}</Link>)}
+            {nav.map(([label, href]) => <a aria-current={activePath(href, currentPath) ? "page" : undefined} href={href} key={href}>{label}</a>)}
           </nav>
         </div>
       </header>
