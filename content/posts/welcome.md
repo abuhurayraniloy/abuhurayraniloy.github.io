@@ -7,13 +7,8 @@ nav: false
 date: 2026-08-25
 featured: true
 draft: false
-tags:
-  - portfolio
-  - notes
 ---
 # Welcome
-
-![](/uploads/cloverbyrivermakesddtex56.png)
 
 This blog section is a growing home for my writing, projects, and notes.
 
