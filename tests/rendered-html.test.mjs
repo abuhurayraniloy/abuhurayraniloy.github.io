@@ -23,12 +23,12 @@ test("exports the minimal home page", async () => {
 });
 
 test("exports the four public sections and detail pages", async () => {
-  const routes = ["blog", "projects", "journals", "contact", "blog/welcome", "projects/portfolio", "journals/a-small-start"];
+  const routes = ["blog", "projects", "journals", "contact", "blog/ownership", "projects/portfolio", "journals/a-small-start"];
   await Promise.all(routes.map(findOutput));
 });
 
 test("creates directory indexes for GitHub Pages", async () => {
-  const routes = ["blog", "projects", "journals", "contact", "blog/welcome", "projects/portfolio", "journals/a-small-start"];
+  const routes = ["blog", "projects", "journals", "contact", "blog/ownership", "projects/portfolio", "journals/a-small-start"];
   await Promise.all(routes.map((route) => access(output(`${route}/index.html`))));
 });
 

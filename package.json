@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "vinext dev",
+    "admin": "node scripts/admin.mjs",
     "build": "vinext build",
     "postbuild": "node scripts/prepare-github-pages.mjs",
     "start": "vinext start",

@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Studio — Abu Hurayra Niloy</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #0b0f19;
+      --bg-surface: #111827;
+      --bg-surface-elevated: #1f293d;
+      --bg-input: #0e1422;
+      --border: #232e42;
+      --border-focus: #6366f1;
+      --text: #f1f5f9;
+      --text-muted: #8492a6;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent-post: #38bdf8;
+      --accent-project: #c084fc;
+      --accent-journal: #fbbf24;
+      --danger: #ef4444;
+      --success: #10b981;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-base);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Header */
+    header {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      height: 56px;
+      z-index: 50;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #fff;
+    }
+    .brand-badge {
+      font-size: 0.72rem;
+      background: rgba(99, 102, 241, 0.15);
+      color: #a5b4fc;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary {
+      background: var(--bg-surface-elevated);
+      color: var(--text);
+      border-color: var(--border);
+    }
+    .btn-secondary:hover { background: #28354f; border-color: #3e4f6d; }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.25); }
+    .btn-sm { padding: 0.35rem 0.65rem; font-size: 0.78rem; }
+
+    /* Main Container */
+    .app-body {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 56px);
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 360px;
+      min-width: 300px;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-controls {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .search-input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 0.45rem 0.75rem;
+      font-size: 0.82rem;
+      outline: none;
+    }
+    .search-input:focus { border-color: var(--border-focus); }
+
+    .collection-tabs {
+      display: flex;
+      gap: 0.25rem;
+      background: var(--bg-input);
+      padding: 0.2rem;
+      border-radius: 7px;
+    }
+    .tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.35rem 0.3rem;
+      font-size: 0.73rem;
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .tab-btn.active {
+      background: var(--bg-surface-elevated);
+      color: #fff;
+    }
+
+    .entry-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .entry-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 0.7rem;
+      cursor: pointer;
+      transition: all 0.12s;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .entry-card:hover {
+      background: var(--bg-surface-elevated);
+      border-color: #384661;
+    }
+    .entry-card.active {
+      background: var(--bg-surface-elevated);
+      border-color: var(--primary);
+    }
+    .entry-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0.12rem 0.4rem;
+      border-radius: 4px;
+    }
+    .badge-posts { background: rgba(56, 189, 248, 0.15); color: var(--accent-post); }
+    .badge-projects { background: rgba(192, 132, 252, 0.15); color: var(--accent-project); }
+    .badge-journals { background: rgba(251, 191, 36, 0.15); color: var(--accent-journal); }
+    .badge-draft { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+    .badge-published { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+
+    .entry-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.35;
+    }
+    .entry-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+    .entry-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      margin-top: 0.15rem;
+    }
+    .tag-chip {
+      background: rgba(255,255,255,0.06);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      color: #94a3b8;
+    }
+
+    /* Workspace */
+    .workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg-base);
+    }
+
+    /* Metadata Panel */
+    .editor-meta {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .meta-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .meta-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      flex: 1;
+    }
+    .meta-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+    .meta-input {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 0.4rem 0.65rem;
+      font-size: 0.85rem;
+      outline: none;
+      font-family: inherit;
+    }
+    .meta-input:focus { border-color: var(--border-focus); }
+    .title-input {
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 0.45rem 0.75rem;
+    }
+
+    /* Toolbar */
+    .editor-toolbar {
+      background: var(--bg-surface-elevated);
+      border-bottom: 1px solid var(--border);
+      padding: 0.35rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .tool-group {
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+    .tool-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      border-radius: 4px;
+      padding: 0.25rem 0.45rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .tool-btn:hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+    .tool-divider {
+      width: 1px;
+      height: 16px;
+      background: var(--border);
+      margin: 0 0.2rem;
+    }
+
+    /* Editor and Preview Split */
+    .editor-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+    .pane {
+      flex: 1;
+      height: 100%;
+      overflow-y: auto;
+    }
+    .editor-pane {
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    textarea#markdownInput {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: none;
+      color: #f1f5f9;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.92rem;
+      line-height: 1.65;
+      padding: 1.25rem;
+      resize: none;
+      outline: none;
+    }
+
+    /* Preview Styling */
+    .preview-pane {
+      background: var(--bg-base);
+      padding: 1.5rem 2rem;
+    }
+    .preview-content {
+      max-width: 720px;
+      margin: 0 auto;
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: 1.12rem;
+      line-height: 1.75;
+      color: #cbd5e1;
+    }
+    .preview-content h1, .preview-content h2, .preview-content h3, .preview-content h4 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #f8fafc;
+      margin-top: 1.6rem;
+      margin-bottom: 0.7rem;
+      line-height: 1.3;
+    }
+    .preview-content h1 { font-size: 1.8rem; border-bottom: 1px solid var(--border); padding-bottom: 0.35rem; }
+    .preview-content h2 { font-size: 1.4rem; }
+    .preview-content h3 { font-size: 1.15rem; }
+    .preview-content p { margin-bottom: 1.15rem; }
+    .preview-content a { color: #818cf8; text-decoration: underline; text-underline-offset: 3px; }
+    .preview-content blockquote {
+      border-left: 3px solid var(--primary);
+      padding-left: 1rem;
+      margin: 1.2rem 0;
+      color: #94a3b8;
+      font-style: italic;
+    }
+    .preview-content code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255,255,255,0.08);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.88em;
+      color: #e0e7ff;
+    }
+    .preview-content pre {
+      background: #0f1422;
+      border: 1px solid var(--border);
+      padding: 0.9rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 1.15rem 0;
+    }
+    .preview-content pre code {
+      background: transparent;
+      padding: 0;
+      color: #e2e8f0;
+      font-size: 0.85rem;
+    }
+    .preview-content img {
+      max-width: 100%;
+      border-radius: 6px;
+      margin: 1.2rem 0;
+      border: 1px solid var(--border);
+    }
+    .preview-content ul, .preview-content ol {
+      margin-bottom: 1.15rem;
+      padding-left: 1.4rem;
+    }
+    .preview-content li { margin-bottom: 0.35rem; }
+
+    /* Status Bar */
+    .status-bar {
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
+      padding: 0.35rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      height: 32px;
+    }
+    .status-info { display: flex; gap: 1rem; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #fff;
+      padding: 0.65rem 1.1rem;
+      border-radius: 7px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 100;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: rgba(16, 185, 129, 0.5); background: #064e3b; }
+    .toast.error { border-color: rgba(239, 68, 68, 0.5); background: #7f1d1d; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: 580px;
+      max-width: 90vw;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+    .modal-header {
+      padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-body {
+      padding: 1.25rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .modal-footer {
+      padding: 0.85rem 1.25rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+
+    #imageFileInput { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header>
+    <div class="brand">
+      <span>✍️ Content Studio</span>
+      <span class="brand-badge">Local CMS</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary btn-sm" onclick="openSettingsModal()">
+        ⚙️ Site Settings
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="createNewEntry('journals')">
+        + Journal
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="createNewEntry('projects')">
+        + Project
+      </button>
+      <button class="btn btn-primary btn-sm" onclick="createNewEntry('posts')">
+        + New Post
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Body -->
+  <div class="app-body">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-controls">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search posts, tags, or content..." oninput="handleSearch()">
+        <div class="collection-tabs">
+          <button class="tab-btn active" data-tab="all" onclick="setCollectionFilter('all')">All (<span id="count-all">0</span>)</button>
+          <button class="tab-btn" data-tab="posts" onclick="setCollectionFilter('posts')">Blogs (<span id="count-posts">0</span>)</button>
+          <button class="tab-btn" data-tab="projects" onclick="setCollectionFilter('projects')">Projects (<span id="count-projects">0</span>)</button>
+          <button class="tab-btn" data-tab="journals" onclick="setCollectionFilter('journals')">Journals (<span id="count-journals">0</span>)</button>
+        </div>
+      </div>
+      <div class="entry-list" id="entryList"></div>
+    </aside>
+
+    <!-- Workspace -->
+    <main class="workspace">
+      <!-- Metadata -->
+      <div class="editor-meta">
+        <div class="meta-row">
+          <div class="meta-field" style="flex: 3;">
+            <label class="meta-label">Title</label>
+            <input type="text" id="inputTitle" class="meta-input title-input" placeholder="Article Title" oninput="handleTitleInput()">
+          </div>
+          <div class="meta-field" style="flex: 1.5;">
+            <label class="meta-label">Collection</label>
+            <select id="inputCollection" class="meta-input">
+              <option value="posts">Blog Post</option>
+              <option value="projects">Project</option>
+              <option value="journals">Journal</option>
+            </select>
+          </div>
+          <div class="meta-field" style="flex: 1.2;">
+            <label class="meta-label">Date</label>
+            <input type="date" id="inputDate" class="meta-input">
+          </div>
+          <div class="meta-field" style="flex: 0.8; align-items: center; justify-content: center;">
+            <label class="meta-label">Draft</label>
+            <label style="display: flex; align-items: center; gap: 0.35rem; cursor: pointer; margin-top: 0.2rem;">
+              <input type="checkbox" id="inputDraft" style="accent-color: var(--primary);">
+              <span style="font-size: 0.8rem;">Keep Draft</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="meta-row">
+          <div class="meta-field" style="flex: 2;">
+            <label class="meta-label">URL Slug</label>
+            <input type="text" id="inputSlug" class="meta-input" placeholder="my-new-post">
+          </div>
+          <div class="meta-field" style="flex: 2;">
+            <label class="meta-label">Tags (comma-separated)</label>
+            <input type="text" id="inputTags" class="meta-input" placeholder="rust, learning, architecture">
+          </div>
+          <div class="meta-field" style="flex: 3;">
+            <label class="meta-label">Short Description</label>
+            <input type="text" id="inputDescription" class="meta-input" placeholder="Brief summary for cards and search">
+          </div>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="editor-toolbar">
+        <div class="tool-group">
+          <button class="tool-btn" onclick="insertMarkdown('**', '**')" title="Bold (Ctrl+B)"><b>B</b></button>
+          <button class="tool-btn" onclick="insertMarkdown('*', '*')" title="Italic (Ctrl+I)"><i>I</i></button>
+          <button class="tool-btn" onclick="insertMarkdown('~~', '~~')" title="Strikethrough">~S~</button>
+          <div class="tool-divider"></div>
+          <button class="tool-btn" onclick="insertHeading(2)" title="Heading 2">H2</button>
+          <button class="tool-btn" onclick="insertHeading(3)" title="Heading 3">H3</button>
+          <div class="tool-divider"></div>
+          <button class="tool-btn" onclick="insertList('- ')" title="Bullet List">• List</button>
+          <button class="tool-btn" onclick="insertList('1. ')" title="Numbered List">1. List</button>
+          <button class="tool-btn" onclick="insertMarkdown('> ', '')" title="Blockquote">❝ Quote</button>
+          <button class="tool-btn" onclick="insertMarkdown('`', '`')" title="Inline Code">&lt;/&gt;</button>
+          <button class="tool-btn" onclick="insertCodeBlock()" title="Code Block">``` Block</button>
+          <div class="tool-divider"></div>
+          <button class="tool-btn" onclick="insertLink()" title="Insert Link">🔗 Link</button>
+          <button class="tool-btn" onclick="triggerImageUpload()" title="Upload Image">📷 Upload Image</button>
+        </div>
+
+        <div class="tool-group">
+          <button class="btn btn-danger btn-sm" onclick="confirmDeleteEntry()" id="btnDelete" style="display: none;">
+            Delete
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="saveCurrentEntry()">
+            💾 Save (Ctrl+S)
+          </button>
+        </div>
+      </div>
+
+      <!-- Split Panes -->
+      <div class="editor-container">
+        <div class="pane editor-pane">
+          <textarea id="markdownInput" placeholder="Write your post here in Markdown..." oninput="updatePreview()"></textarea>
+        </div>
+        <div class="pane preview-pane">
+          <div class="preview-content" id="previewContainer"></div>
+        </div>
+      </div>
+
+      <!-- Status Bar -->
+      <footer class="status-bar">
+        <div class="status-info">
+          <span id="statWords">0 words</span>
+          <span id="statReadTime">0 min read</span>
+          <span id="statChars">0 characters</span>
+        </div>
+        <div>
+          <span id="statPath">No file selected</span>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1rem; font-weight: 600;">Site Settings (content/settings.json)</h3>
+        <button class="btn btn-secondary btn-sm" onclick="closeSettingsModal()">✕</button>
+      </div>
+      <div class="modal-body" id="settingsForm"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" onclick="closeSettingsModal()">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="saveSiteSettings()">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">Saved</div>
+
+  <!-- Hidden File Input -->
+  <input type="file" id="imageFileInput" accept="image/*" onchange="uploadSelectedImage(event)">
+
+  <script>
+    let entries = [];
+    let currentEntry = null;
+    let currentFilter = 'all';
+    let searchQuery = '';
+    let autoSlug = true;
+
+    async function init() {
+      await loadEntries();
+      if (entries.length > 0) {
+        selectEntry(entries[0].collection, entries[0].slug);
+      } else {
+        createNewEntry('posts');
+      }
+    }
+
+    async function loadEntries() {
+      try {
+        const res = await fetch('/api/entries');
+        entries = await res.json();
+        updateCounts();
+        renderEntryList();
+      } catch (err) {
+        showToast('Error loading entries', 'error');
+      }
+    }
+
+    function updateCounts() {
+      document.getElementById('count-all').textContent = entries.length;
+      document.getElementById('count-posts').textContent = entries.filter(e => e.collection === 'posts').length;
+      document.getElementById('count-projects').textContent = entries.filter(e => e.collection === 'projects').length;
+      document.getElementById('count-journals').textContent = entries.filter(e => e.collection === 'journals').length;
+    }
+
+    function setCollectionFilter(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === filter);
+      });
+      renderEntryList();
+    }
+
+    function handleSearch() {
+      searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+      renderEntryList();
+    }
+
+    function renderEntryList() {
+      const container = document.getElementById('entryList');
+      const filtered = entries.filter(e => {
+        if (currentFilter !== 'all' && e.collection !== currentFilter) return false;
+        if (searchQuery) {
+          const matchTitle = e.title.toLowerCase().includes(searchQuery);
+          const matchDesc = (e.description || '').toLowerCase().includes(searchQuery);
+          const matchTags = (e.tags || []).some(t => t.toLowerCase().includes(searchQuery));
+          return matchTitle || matchDesc || matchTags;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">No entries found. Click + to create one!</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(e => {
+        const isActive = currentEntry && currentEntry.collection === e.collection && currentEntry.slug === e.slug;
+        const colBadge = '<span class="badge badge-' + e.collection + '">' + e.collection.slice(0, -1) + '</span>';
+        const draftBadge = e.draft ? '<span class="badge badge-draft">Draft</span>' : '<span class="badge badge-published">Live</span>';
+        const tags = (e.tags || []).map(t => '<span class="tag-chip">#' + t + '</span>').join('');
+
+        return `
+          <div class="entry-card ${isActive ? 'active' : ''}" onclick="selectEntry('${e.collection}', '${e.slug}')">
+            <div class="entry-header">
+              <div style="display: flex; gap: 0.35rem; align-items: center;">
+                ${colBadge}
+                ${draftBadge}
+              </div>
+              <span style="font-size: 0.72rem; color: var(--text-muted);">${e.date || ''}</span>
+            </div>
+            <div class="entry-title">${escapeHtml(e.title || e.slug)}</div>
+            <div class="entry-meta">
+              <span>${e.wordCount} words</span>
+            </div>
+            ${tags ? '<div class="entry-tags">' + tags + '</div>' : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function selectEntry(collection, slug) {
+      try {
+        const res = await fetch(`/api/entry?collection=${collection}&slug=${slug}`);
+        if (!res.ok) throw new Error('Failed to load entry');
+        const entry = await res.json();
+        currentEntry = entry;
+        autoSlug = false;
+
+        document.getElementById('inputCollection').value = entry.collection;
+        document.getElementById('inputTitle').value = entry.data.title || '';
+        document.getElementById('inputSlug').value = entry.slug;
+        document.getElementById('inputDate').value = entry.data.date || '';
+        document.getElementById('inputDraft').checked = Boolean(entry.data.draft);
+        document.getElementById('inputTags').value = (entry.data.tags || []).join(', ');
+        document.getElementById('inputDescription').value = entry.data.description || '';
+        document.getElementById('markdownInput').value = entry.content || '';
+        document.getElementById('statPath').textContent = `content/${entry.collection}/${entry.slug}.md`;
+
+        document.getElementById('btnDelete').style.display = 'inline-flex';
+
+        updatePreview();
+        renderEntryList();
+      } catch (err) {
+        showToast('Error opening entry', 'error');
+      }
+    }
+
+    function createNewEntry(collection = 'posts') {
+      const today = new Date().toISOString().slice(0, 10);
+      currentEntry = {
+        collection,
+        slug: '',
+        oldSlug: '',
+        isNew: true,
+        data: {
+          title: '',
+          description: '',
+          date: today,
+          tags: [],
+          draft: false
+        },
+        content: '# New Post\n\nStart writing your ideas here...'
+      };
+      autoSlug = true;
+
+      document.getElementById('inputCollection').value = collection;
+      document.getElementById('inputTitle').value = '';
+      document.getElementById('inputSlug').value = '';
+      document.getElementById('inputDate').value = today;
+      document.getElementById('inputDraft').checked = false;
+      document.getElementById('inputTags').value = '';
+      document.getElementById('inputDescription').value = '';
+      document.getElementById('markdownInput').value = currentEntry.content;
+      document.getElementById('statPath').textContent = `content/${collection}/[unsaved].md`;
+
+      document.getElementById('btnDelete').style.display = 'none';
+
+      document.getElementById('inputTitle').focus();
+      updatePreview();
+      renderEntryList();
+    }
+
+    function handleTitleInput() {
+      const title = document.getElementById('inputTitle').value;
+      if (autoSlug) {
+        const slug = slugify(title);
+        document.getElementById('inputSlug').value = slug;
+      }
+    }
+
+    function slugify(text) {
+      return text.toString().toLowerCase().trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function updatePreview() {
+      const markdown = document.getElementById('markdownInput').value;
+      let html = '';
+      if (window.marked && window.DOMPurify) {
+        html = DOMPurify.sanitize(marked.parse(markdown));
+      } else {
+        html = '<pre>' + escapeHtml(markdown) + '</pre>';
+      }
+      document.getElementById('previewContainer').innerHTML = html;
+
+      const words = markdown.trim() ? markdown.trim().split(/\s+/).filter(Boolean).length : 0;
+      const chars = markdown.length;
+      const readTime = Math.max(1, Math.ceil(words / 200));
+
+      document.getElementById('statWords').textContent = `${words} words`;
+      document.getElementById('statReadTime').textContent = `${readTime} min read`;
+      document.getElementById('statChars').textContent = `${chars} chars`;
+    }
+
+    async function saveCurrentEntry() {
+      const collection = document.getElementById('inputCollection').value;
+      const title = document.getElementById('inputTitle').value.trim();
+      let slug = document.getElementById('inputSlug').value.trim();
+
+      if (!title) {
+        showToast('Please enter a title', 'error');
+        return;
+      }
+      if (!slug) {
+        slug = slugify(title);
+        document.getElementById('inputSlug').value = slug;
+      }
+
+      const tags = document.getElementById('inputTags').value
+        .split(',')
+        .map(t => t.trim())
+        .filter(Boolean);
+
+      const payload = {
+        collection,
+        slug,
+        oldSlug: currentEntry && !currentEntry.isNew ? currentEntry.slug : '',
+        data: {
+          title,
+          description: document.getElementById('inputDescription').value.trim(),
+          date: document.getElementById('inputDate').value,
+          tags,
+          draft: document.getElementById('inputDraft').checked
+        },
+        content: document.getElementById('markdownInput').value
+      };
+
+      try {
+        const res = await fetch('/api/entry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || 'Failed to save');
+
+        showToast('Saved successfully!', 'success');
+        await loadEntries();
+        selectEntry(collection, result.slug);
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    async function confirmDeleteEntry() {
+      if (!currentEntry || currentEntry.isNew) return;
+      if (!confirm(`Are you sure you want to delete "${currentEntry.data.title || currentEntry.slug}"?`)) return;
+
+      try {
+        const res = await fetch('/api/entry', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ collection: currentEntry.collection, slug: currentEntry.slug })
+        });
+        if (!res.ok) throw new Error('Failed to delete');
+        showToast('Deleted successfully', 'success');
+        await loadEntries();
+        if (entries.length > 0) {
+          selectEntry(entries[0].collection, entries[0].slug);
+        } else {
+          createNewEntry('posts');
+        }
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    function insertMarkdown(before, after) {
+      const textarea = document.getElementById('markdownInput');
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const text = textarea.value;
+      const selected = text.slice(start, end);
+      textarea.value = text.slice(0, start) + before + selected + after + text.slice(end);
+      textarea.focus();
+      textarea.setSelectionRange(start + before.length, end + before.length);
+      updatePreview();
+    }
+
+    function insertHeading(level) {
+      const hashes = '#'.repeat(level) + ' ';
+      insertMarkdown('\n' + hashes, '\n');
+    }
+
+    function insertList(prefix) {
+      insertMarkdown('\n' + prefix, '');
+    }
+
+    function insertCodeBlock() {
+      insertMarkdown('\n```javascript\n', '\n```\n');
+    }
+
+    function insertLink() {
+      const url = prompt('Enter URL:', 'https://');
+      if (url) {
+        insertMarkdown('[', `](${url})`);
+      }
+    }
+
+    function triggerImageUpload() {
+      document.getElementById('imageFileInput').click();
+    }
+
+    async function uploadSelectedImage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        const base64 = e.target.result.split(',')[1];
+        try {
+          showToast('Uploading image...', 'info');
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: file.name, data: base64 })
+          });
+          const result = await res.json();
+          if (!res.ok) throw new Error(result.error || 'Upload failed');
+          insertMarkdown(`![Alt text](${result.url})`, '');
+          showToast('Image inserted!', 'success');
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      };
+      reader.readAsDataURL(file);
+      event.target.value = '';
+    }
+
+    // Settings Modal
+    let siteSettings = {};
+    async function openSettingsModal() {
+      try {
+        const res = await fetch('/api/settings');
+        siteSettings = await res.json();
+        renderSettingsForm();
+        document.getElementById('settingsModal').classList.add('open');
+      } catch (err) {
+        showToast('Error loading settings', 'error');
+      }
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.remove('open');
+    }
+
+    function renderSettingsForm() {
+      const container = document.getElementById('settingsForm');
+      container.innerHTML = `
+        <div class="meta-field">
+          <label class="meta-label">Your Name</label>
+          <input type="text" id="set_name" class="meta-input" value="${escapeHtml(siteSettings.name || '')}">
+        </div>
+        <div class="meta-field">
+          <label class="meta-label">Site Title</label>
+          <input type="text" id="set_siteTitle" class="meta-input" value="${escapeHtml(siteSettings.siteTitle || '')}">
+        </div>
+        <div class="meta-field">
+          <label class="meta-label">Site Description</label>
+          <textarea id="set_description" class="meta-input" rows="2">${escapeHtml(siteSettings.description || '')}</textarea>
+        </div>
+        <div class="meta-field">
+          <label class="meta-label">Home Intro</label>
+          <textarea id="set_homeIntro" class="meta-input" rows="3">${escapeHtml(siteSettings.home?.intro || '')}</textarea>
+        </div>
+        <div class="meta-row">
+          <div class="meta-field">
+            <label class="meta-label">Email</label>
+            <input type="text" id="set_email" class="meta-input" value="${escapeHtml(siteSettings.contact?.email || '')}">
+          </div>
+          <div class="meta-field">
+            <label class="meta-label">GitHub URL</label>
+            <input type="text" id="set_github" class="meta-input" value="${escapeHtml(siteSettings.contact?.github || '')}">
+          </div>
+          <div class="meta-field">
+            <label class="meta-label">LinkedIn URL</label>
+            <input type="text" id="set_linkedin" class="meta-input" value="${escapeHtml(siteSettings.contact?.linkedin || '')}">
+          </div>
+        </div>
+      `;
+    }
+
+    async function saveSiteSettings() {
+      siteSettings.name = document.getElementById('set_name').value.trim();
+      siteSettings.siteTitle = document.getElementById('set_siteTitle').value.trim();
+      siteSettings.description = document.getElementById('set_description').value.trim();
+      if (!siteSettings.home) siteSettings.home = { title: "Home" };
+      siteSettings.home.intro = document.getElementById('set_homeIntro').value.trim();
+      if (!siteSettings.contact) siteSettings.contact = { title: "Contact" };
+      siteSettings.contact.email = document.getElementById('set_email').value.trim();
+      siteSettings.contact.github = document.getElementById('set_github').value.trim();
+      siteSettings.contact.linkedin = document.getElementById('set_linkedin').value.trim();
+
+      try {
+        const res = await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(siteSettings)
+        });
+        if (!res.ok) throw new Error('Failed to update settings');
+        showToast('Site settings updated!', 'success');
+        closeSettingsModal();
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveCurrentEntry();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+        if (document.activeElement === document.getElementById('markdownInput')) {
+          e.preventDefault();
+          insertMarkdown('**', '**');
+        }
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+        if (document.activeElement === document.getElementById('markdownInput')) {
+          e.preventDefault();
+          insertMarkdown('*', '*');
+        }
+      }
+    });
+
+    function showToast(msg, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = 'toast show ' + type;
+      setTimeout(() => {
+        toast.className = 'toast';
+      }, 3000);
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[m]);
+    }
+
+    init();
+  </script>
+</body>
+</html>
