@@ -35,13 +35,24 @@ This launches a web dashboard at `http://localhost:3333` with:
 - **Direct image uploads**: Automatically saves to `public/uploads/` and inserts into Markdown
 - **Drafts & Search**: Filter and search across all content
 - **Site Settings**: Edit your profile bio, contacts, and home intro (`content/settings.json`)
+- **1-Click Publishing**: Click **"🚀 Publish Site"** right in the UI to commit and push changes directly to GitHub
+- **Auto-Publish Toggle**: Check "Auto-publish on save" to automatically deploy when saving live posts
 
-Alternatively, raw Markdown files can be edited in `content/`:
-- Blogs: `content/posts/`
-- Projects: `content/projects/`
-- Journals: `content/journals/`
-- Home and contact details: `content/settings.json`
+## Publishing & Deployment
 
-## Deployment
+To publish your local changes to the live site, you can choose any of these methods:
 
-The GitHub Actions workflow builds and deploys the static site. Set GitHub Pages Source to GitHub Actions, then push to main.
+1. **From Content Studio UI**: Click the green **"🚀 Publish Site"** button in the header (or enable **"Auto-publish on save"**).
+2. **From Terminal (1-step command)**:
+   ```bash
+   npm run publish
+   ```
+   This stages changes, commits with a timestamp, and pushes to GitHub.
+3. **Manual Git Push**:
+   ```bash
+   git add .
+   git commit -m "content: update posts"
+   git push origin main
+   ```
+
+GitHub Actions will automatically build and deploy your static site to [abuhurayraniloy.github.io](https://abuhurayraniloy.github.io).

@@ -90,6 +90,9 @@
     }
     .btn-primary { background: var(--primary); color: #fff; }
     .btn-primary:hover { background: var(--primary-hover); }
+    .btn-publish { background: #059669; color: #fff; }
+    .btn-publish:hover { background: #047857; }
+    .btn-publish:disabled { opacity: 0.6; cursor: not-allowed; }
     .btn-secondary {
       background: var(--bg-surface-elevated);
       color: var(--text);
@@ -437,7 +440,7 @@
       color: var(--text-muted);
       height: 32px;
     }
-    .status-info { display: flex; gap: 1rem; }
+    .status-info { display: flex; gap: 1rem; align-items: center; }
 
     /* Toast */
     .toast {
@@ -521,7 +524,7 @@
     </div>
     <div class="header-actions">
       <button class="btn btn-secondary btn-sm" onclick="openSettingsModal()">
-        ⚙️ Site Settings
+        ⚙️ Settings
       </button>
       <button class="btn btn-secondary btn-sm" onclick="createNewEntry('journals')">
         + Journal
@@ -531,6 +534,10 @@
       </button>
       <button class="btn btn-primary btn-sm" onclick="createNewEntry('posts')">
         + New Post
+      </button>
+      <div style="width: 1px; height: 20px; background: var(--border); margin: 0 0.2rem;"></div>
+      <button class="btn btn-publish btn-sm" id="btnPublish" onclick="publishChanges()" title="Push changes to GitHub and trigger live site deployment">
+        🚀 Publish Site <span id="publishBadge" style="display: none; background: rgba(255,255,255,0.25); font-size: 0.68rem; padding: 0.1rem 0.4rem; border-radius: 999px; margin-left: 0.2rem;">●</span>
       </button>
     </div>
   </header>
@@ -681,10 +688,62 @@
 
     async function init() {
       await loadEntries();
+      await checkGitStatus();
       if (entries.length > 0) {
         selectEntry(entries[0].collection, entries[0].slug);
       } else {
         createNewEntry('posts');
+      }
+    }
+
+    async function checkGitStatus() {
+      try {
+        const res = await fetch('/api/git-status');
+        if (!res.ok) return;
+        const data = await res.json();
+        const badge = document.getElementById('publishBadge');
+        if (data.dirty || data.unpushed) {
+          badge.style.display = 'inline-block';
+          badge.textContent = data.changedFiles > 0 ? `${data.changedFiles} modified` : 'Ready to push';
+        } else {
+          badge.style.display = 'none';
+        }
+      } catch {}
+    }
+
+    async function publishChanges() {
+      const btn = document.getElementById('btnPublish');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Publishing to GitHub...';
+
+      try {
+        const res = await fetch('/api/publish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: `content: publish updates from Content Studio (${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})` })
+        });
+        
+        const text = await res.text();
+        let result;
+        try {
+          result = JSON.parse(text);
+        } catch {
+          if (res.status === 404) {
+            throw new Error('Please restart "npm run admin" in your terminal to enable publishing.');
+          }
+          throw new Error(text || 'Server error');
+        }
+
+        if (!res.ok) throw new Error(result.error || 'Failed to publish');
+
+        showToast('🚀 Pushed to GitHub! Live site is deploying.', 'success');
+        await checkGitStatus();
+      } catch (err) {
+        showToast(`Publish error: ${err.message}`, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
       }
     }
 
@@ -862,6 +921,7 @@
       const collection = document.getElementById('inputCollection').value;
       const title = document.getElementById('inputTitle').value.trim();
       let slug = document.getElementById('inputSlug').value.trim();
+      const isDraft = document.getElementById('inputDraft').checked;
 
       if (!title) {
         showToast('Please enter a title', 'error');
@@ -886,7 +946,7 @@
           description: document.getElementById('inputDescription').value.trim(),
           date: document.getElementById('inputDate').value,
           tags,
-          draft: document.getElementById('inputDraft').checked
+          draft: isDraft
         },
         content: document.getElementById('markdownInput').value
       };
@@ -903,6 +963,7 @@
         showToast('Saved successfully!', 'success');
         await loadEntries();
         selectEntry(collection, result.slug);
+        await checkGitStatus();
       } catch (err) {
         showToast(err.message, 'error');
       }
@@ -921,6 +982,7 @@
         if (!res.ok) throw new Error('Failed to delete');
         showToast('Deleted successfully', 'success');
         await loadEntries();
+        await checkGitStatus();
         if (entries.length > 0) {
           selectEntry(entries[0].collection, entries[0].slug);
         } else {
@@ -985,6 +1047,7 @@
           if (!res.ok) throw new Error(result.error || 'Upload failed');
           insertMarkdown(`![Alt text](${result.url})`, '');
           showToast('Image inserted!', 'success');
+          await checkGitStatus();
         } catch (err) {
           showToast(err.message, 'error');
         }
@@ -1066,6 +1129,7 @@
         if (!res.ok) throw new Error('Failed to update settings');
         showToast('Site settings updated!', 'success');
         closeSettingsModal();
+        await checkGitStatus();
       } catch (err) {
         showToast(err.message, 'error');
       }

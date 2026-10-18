@@ -42,6 +42,7 @@ function object(value: unknown, file: string): Record<string, unknown> {
 }
 function string(value: unknown, file: string, field: string, fallback?: string): string {
   if (value === undefined && fallback !== undefined) return fallback;
+  if (typeof value === "string" && !value.trim() && fallback !== undefined) return fallback;
   if (typeof value !== "string" || !value.trim()) fail(file, `field "${field}" must be a non-empty string`);
   return value.trim();
 }

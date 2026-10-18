@@ -2,9 +2,11 @@ import http from "node:http";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { spawn } from "node:child_process";
+import { spawn, execFile } from "node:child_process";
+import { promisify } from "node:util";
 import matter from "gray-matter";
 
+const execFileAsync = promisify(execFile);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, "..");
@@ -95,7 +97,6 @@ async function saveEntry({ collection, slug, oldSlug, data, content }) {
   const dir = path.join(CONTENT_DIR, collection);
   await fs.mkdir(dir, { recursive: true });
 
-  // If renaming, remove previous file
   if (oldSlug && oldSlug !== cleanSlug) {
     const oldPath = path.join(dir, `${oldSlug}.md`);
     try {
@@ -107,10 +108,10 @@ async function saveEntry({ collection, slug, oldSlug, data, content }) {
 
   const targetPath = path.join(dir, `${cleanSlug}.md`);
 
-  // Ensure clean frontmatter values
+  const desc = (data.description || "").trim() || (data.title || cleanSlug);
   const frontmatter = {
     title: data.title || cleanSlug,
-    description: data.description || "",
+    description: desc,
     date: data.date || new Date().toISOString().slice(0, 10),
   };
   if (Array.isArray(data.tags) && data.tags.length > 0) {
@@ -157,6 +158,35 @@ async function handleUpload(name, base64Data) {
   const buffer = Buffer.from(base64Data, "base64");
   await fs.writeFile(targetPath, buffer);
   return { url: `/uploads/${filename}`, filename };
+}
+
+// Git automation
+async function getGitStatus() {
+  try {
+    const { stdout: status } = await execFileAsync("git", ["status", "--porcelain"], { cwd: ROOT_DIR });
+    const { stdout: cherry } = await execFileAsync("git", ["cherry", "-v", "origin/main"], { cwd: ROOT_DIR }).catch(() => ({ stdout: "" }));
+    const lines = status.trim() ? status.trim().split("\n") : [];
+    return {
+      dirty: lines.length > 0,
+      unpushed: Boolean(cherry.trim()),
+      changedFiles: lines.length,
+    };
+  } catch (err) {
+    return { dirty: false, unpushed: false, error: err.message };
+  }
+}
+
+async function publishToGitHub(customMessage) {
+  const { stdout: status } = await execFileAsync("git", ["status", "--porcelain"], { cwd: ROOT_DIR });
+  if (status.trim()) {
+    await execFileAsync("git", ["add", "-A"], { cwd: ROOT_DIR });
+    const timestamp = new Date().toISOString().replace("T", " ").slice(0, 16);
+    const msg = customMessage || `content: publish updates (${timestamp})`;
+    await execFileAsync("git", ["commit", "-m", msg], { cwd: ROOT_DIR });
+  }
+
+  await execFileAsync("git", ["push", "origin", "main"], { cwd: ROOT_DIR });
+  return { success: true, message: "Published to GitHub! Deployment is underway." };
 }
 
 function parseJsonBody(req) {
@@ -280,6 +310,17 @@ async function handleRequest(req, res) {
       const body = await parseJsonBody(req);
       if (!body.name || !body.data) return sendJson(res, 400, { error: "Missing name or data" });
       const result = await handleUpload(body.name, body.data);
+      return sendJson(res, 200, result);
+    }
+
+    if (pathname === "/api/git-status" && method === "GET") {
+      const status = await getGitStatus();
+      return sendJson(res, 200, status);
+    }
+
+    if (pathname === "/api/publish" && method === "POST") {
+      const body = await parseJsonBody(req);
+      const result = await publishToGitHub(body.message);
       return sendJson(res, 200, result);
     }
 
